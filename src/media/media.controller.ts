@@ -92,8 +92,7 @@ export class MediaController {
     const skip = page ?? 0;
     const take = perPage ?? 20;
 
-    console.log(result)
-
+    
     return paginationUtils.sendPaginatedResponse(res, result, skip, take);
   }
 

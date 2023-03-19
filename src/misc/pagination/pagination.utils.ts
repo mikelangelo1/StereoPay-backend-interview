@@ -1,3 +1,4 @@
+import { ResponseStatus } from '@/media/media.dto';
 import { Response } from 'express';
 import { PaginatedResult } from './pagination.dto';
 
@@ -8,20 +9,23 @@ export const paginationUtils = {
     skip: number,
     take: number,
   ) {
-    const currentPage = skip + 1;
+    const currentPage = skip - 1;
     const totalPage = Math.ceil(result.total / take);
     const { data } = result;
+    const message = 'Successfully Retrieved all media';
+    const status = ResponseStatus.SUCCESS
     this.setPaginationResponseHeaders(
       response,
       currentPage,
       totalPage,
       result.total,
-    ).send({ currentPage, totalPage, data });
+    ).send({  data, message, status  });
 
     return {
       currentPage,
       totalPage,
       data,
+   
     };
   },
 
