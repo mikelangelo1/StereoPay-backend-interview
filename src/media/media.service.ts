@@ -10,7 +10,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Media, Prisma } from '@prisma/client';
-import { CreateNewMediaRequest } from './media.dto';
+import { CreateNewMediaRequest, SearchMediaResponse, UpdateMediaStatusRequest } from './media.dto';
 import * as uuid from 'uuid';
 import moment from 'moment';
 import { PreSignedUrlResult } from '@/spaces/spaces.dto';
@@ -67,5 +67,112 @@ export class MediaService {
     return newMedia;
   }
 
-  
+  public async getAllMedia(page: number, perPage: number) {
+    const allMedia =
+      await this.prismaService.media.findMany({
+        take: page,
+        skip: perPage
+      });
+
+      const totalCount = await this.prismaService.media.count();
+
+    return {
+      data: allMedia,
+      total: totalCount
+    };
+  }
+
+
+  public async getMedia(id: string) {
+    const media =
+      await this.prismaService.media.findUnique({
+        where: {
+          id: id,
+        },
+      });
+
+    if (!media) {
+      throw new NotFoundException('Invalid media');
+    }
+
+    return media;
+  }
+
+   /**
+   * Search for media by title and description
+   *
+   * Supports Pagination
+   */
+
+   public async searchMedia(
+    query: string,
+  ): Promise<SearchMediaResponse> {
+    // TODO: Use a better searching approach to improve performance
+
+    const filter: Prisma.MediaWhereInput = {
+      OR: [
+        {
+          name: {
+            startsWith: query,
+            contains: query
+          },
+        },
+        {
+          description: {
+            startsWith: query,
+            contains: query
+          },
+        },
+      ],
+    };
+
+    const media =
+      await this.prismaService.media.findMany({
+        where: filter,
+      });
+
+    const totalCount = await this.prismaService.media.count({
+      where: filter,
+    });
+
+    return {
+      data: media,
+      total: totalCount,
+    };
+  }
+
+
+
+
+  /**
+   * Update media status
+   *
+   * Return media
+   */
+  public async updateMediaStatus(
+    id: string,
+    data: UpdateMediaStatusRequest,
+  ): Promise<Media> {
+    return await this.prismaService.media.update({
+      where: {
+        id: id,
+      },
+      data: {
+        status: data.status,
+      },
+    });
+  }
+
+  /**
+   * Delete media
+   *
+   * Return null
+   */
+  public async deleteMedia(id: string) {
+    return await this.prismaService.media.delete({
+      where: {
+        id: id,
+      },
+    });
+  }
 }

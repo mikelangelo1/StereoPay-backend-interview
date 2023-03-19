@@ -1,7 +1,8 @@
 import { PreSignedUrlResult } from '@/spaces/spaces.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { MediaType, Status } from '@prisma/client';
+import { Media, MediaType, Status } from '@prisma/client';
 import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
+import { type } from 'os';
 
 export class CreateNewMediaRequest {
   @ApiProperty({
@@ -41,3 +42,27 @@ export class CreateNewMediaData {
 export class CreateNewMediaResponse {
   preSignedUrls: PreSignedUrlResult[];
 }
+
+export class UpdateMediaStatusRequest {
+  @ApiProperty({
+    enum: Object.values(Status),
+  })
+  @IsEnum(Status)
+  status: Status;
+}
+
+export class SearchMediaResponse {
+  data: Media[];
+  total: number;
+}
+
+export enum ResponseStatus {
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
+
+export type MediaRespone<T> = {
+  status: ResponseStatus;
+  message: string;
+  data: T[] | T;
+};
