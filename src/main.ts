@@ -106,7 +106,7 @@ async function bootstrap() {
       operationIdFactory: (controllerKey: string, methodKey: string) =>
         _.startCase(methodKey),
     });
-    SwaggerModule.setup('op enapi', app, document, {
+    SwaggerModule.setup('openapi', app, document, {
       customSiteTitle: 'STEREOPAY OpenAPI',
       swaggerOptions: {
         persistAuthorization: true,

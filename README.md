@@ -1,73 +1,56 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Overview
+This is the server-side application for Stereopay Backend Interview (developed using NestJS)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Development
 
-## Description
+### Prerequisites
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- VS Code
+  - Other IDEs might work too, but VS Code is preferred just so everyone on the team is using the same tools
+- Install NodeJS (v14.19.0)
+  - [Recommended] It is preferred to install and use `nvm` to manage multiple node versions if you already have a different node version installed
+    - For Windows: https://github.com/coreybutler/nvm-windows
+    - For Mac & Linux: https://github.com/nvm-sh/nvm
+  - If for some reason, you choose not to use 'nvm', you can also install the specified version of NodeJS directly from [here](https://nodejs.org/download/release/v14.19.0/)
+    - Note: This approach might cause conflicts if you have a different version of NodeJS already installed on your machine
+- Learn about Nest JS
+  - We use Nest JS as our NodeJS server-side Framework. It has full TypeScript support, and has a very opinionated way of doing thing. As such, please go through the key concepts of NestJS before diving into this project
+  - More info on NestJS can be found [here](https://docs.nestjs.com/)
+- Learn about Prisma
+  - We use Prisma as our ORM while accessing the DB through code. Prisma takes a very different approach to ORM than others like TypeORM and Sequelize. As such, please go through the key concepts of Prisma before diving into this project
+  - Learn more about how Prisma works [here](https://www.prisma.io/docs/getting-started)
 
-## Installation
 
-```bash
-$ npm install
-```
+### Setup
 
-## Running the app
 
-```bash
-# development
-$ npm run start
+- Setup `.env` file
+  - Create a file called `.env` at the root of the project
+    - The server requires the `.env` file to be present, and to contain the keys and secrets required. But since it can contain secrets, this file is not pushed to git. That's why we must create it after we clone the repo.
+  - Update the `.env` file
+    - Replace the connection string in the `DATABASE_URL` with the proper values for your MYSQL DB
 
-# watch mode
-$ npm run start:dev
+### Running the app
 
-# production mode
-$ npm run start:prod
-```
+- Open the workspace in VS Code
+  - Make sure to open the workspace, and not just the folder
+- Open terminal, and navigate to the project directory `'<repo_path>/server'`
+- Run `npm install`
+- Run `npm run start:dev`
+  - This will start running the Stereopay media server on port 5000
+  - This will also start running the Swagger UI with the OpenAPI spec at http://localhost:5000/openapi
+    - You can use it to review the API spec, and also to send requests to the server without using Postman
+  - If you choose to use Postman, you can find the Stereopay Collection and Documentation [here](https://documenter.getpostman.com/view/8655337/2s93JzMg9N)
 
-## Test
 
-```bash
-# unit tests
-$ npm run test
+### Changing the DB schema
+We use Prisma as our ORM, and as such we need to regenerate the prsima client everytime we make a change. We use Prisma's migration tool for this. Generally, this is what it looks like:
 
-# e2e tests
-$ npm run test:e2e
+- Update the schema in `prisma/schema.prisma`
+- Run `npx prisma migrate dev --name name_for_the_migration`
 
-# test coverage
-$ npm run test:cov
-```
+That's it! Your local DB should now have the new changes, and it should have also regenerated the prsima client to use in code.
 
-## Support
+But in some cases, there could be conflict, or we might have to make a few more changes. More info on Prisma and it's Migration tool can be found [here](https://www.prisma.io/docs/concepts/components/prisma-migrate)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
