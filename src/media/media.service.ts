@@ -10,11 +10,16 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Media, Prisma } from '@prisma/client';
-import { CreateNewMediaRequest, SearchMediaResponse, UpdateMediaStatusRequest } from './media.dto';
+import {
+  CreateNewMediaRequest,
+  SearchMediaResponse,
+  UpdateMediaStatusRequest,
+} from './media.dto';
 import * as uuid from 'uuid';
 import moment from 'moment';
 import { PreSignedUrlResult } from '@/spaces/spaces.dto';
 import { SpacesService } from '@/spaces/spaces.service';
+import { MediaConstants } from './media.constant';
 
 @Injectable()
 export class MediaService {
@@ -62,34 +67,40 @@ export class MediaService {
           },
         },
       },
+      include: MediaConstants.StandardIncludeSets.media,
     });
 
     return newMedia;
   }
 
   public async getAllMedia(page: number, perPage: number) {
-    const allMedia =
-      await this.prismaService.media.findMany({
-        take: page,
-        skip: perPage
-      });
+    if (page == 0) {
+      page = 0;
+    } else if (page >= 1) {
+      page -= 1;
+    }
 
-      const totalCount = await this.prismaService.media.count();
+    const allMedia = await this.prismaService.media.findMany({
+      take: perPage,
+      skip: page ,
+      include: MediaConstants.StandardIncludeSets.media,
+    });
+
+    const totalCount = await this.prismaService.media.count();
 
     return {
       data: allMedia,
-      total: totalCount
+      total: totalCount,
     };
   }
 
-
   public async getMedia(id: string) {
-    const media =
-      await this.prismaService.media.findUnique({
-        where: {
-          id: id,
-        },
-      });
+    const media = await this.prismaService.media.findUnique({
+      where: {
+        id: id,
+      },
+      include: MediaConstants.StandardIncludeSets.media,
+    });
 
     if (!media) {
       throw new NotFoundException('Invalid media');
@@ -98,15 +109,13 @@ export class MediaService {
     return media;
   }
 
-   /**
+  /**
    * Search for media by title and description
    *
    * Supports Pagination
    */
 
-   public async searchMedia(
-    query: string,
-  ): Promise<SearchMediaResponse> {
+  public async searchMedia(query: string): Promise<SearchMediaResponse> {
     // TODO: Use a better searching approach to improve performance
 
     const filter: Prisma.MediaWhereInput = {
@@ -114,22 +123,22 @@ export class MediaService {
         {
           name: {
             startsWith: query,
-            contains: query
+            contains: query,
           },
         },
         {
           description: {
             startsWith: query,
-            contains: query
+            contains: query,
           },
         },
       ],
     };
 
-    const media =
-      await this.prismaService.media.findMany({
-        where: filter,
-      });
+    const media = await this.prismaService.media.findMany({
+      where: filter,
+      include: MediaConstants.StandardIncludeSets.media,
+    });
 
     const totalCount = await this.prismaService.media.count({
       where: filter,
@@ -140,9 +149,6 @@ export class MediaService {
       total: totalCount,
     };
   }
-
-
-
 
   /**
    * Update media status
@@ -160,6 +166,7 @@ export class MediaService {
       data: {
         status: data.status,
       },
+      include: MediaConstants.StandardIncludeSets.media,
     });
   }
 
@@ -173,6 +180,7 @@ export class MediaService {
       where: {
         id: id,
       },
+      include: MediaConstants.StandardIncludeSets.media,
     });
   }
 }

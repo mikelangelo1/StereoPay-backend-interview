@@ -23,6 +23,7 @@ import { ApiParam } from '@nestjs/swagger';
 import { Media } from '@prisma/client';
 import { Request, Response } from 'express';
 import _ from 'lodash';
+import { MediaConstants } from './media.constant';
 import {
   CreateNewMediaRequest,
   MediaRespone,
@@ -91,6 +92,8 @@ export class MediaController {
     const skip = page ?? 0;
     const take = perPage ?? 20;
 
+    console.log(result)
+
     return paginationUtils.sendPaginatedResponse(res, result, skip, take);
   }
 
@@ -151,7 +154,6 @@ export class MediaController {
   @Get('search')
   async searchMedia(
     @Req() req: Request,
-    @Res() res: Response,
     @Query('query') query: string,
   ): Promise<MediaRespone<SearchMediaResponse>> {
     const media = await this.mediaService.searchMedia(query);
@@ -208,7 +210,7 @@ export class MediaController {
 
     return {
       data: updatedMedia,
-      message: 'Search updated media status',
+      message: 'Updated media status successfully',
       status: ResponseStatus.SUCCESS,
     }
   }

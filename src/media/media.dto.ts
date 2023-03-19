@@ -1,8 +1,10 @@
+import { PrismaFindArgs } from '@/misc/types/helperTypes';
 import { PreSignedUrlResult } from '@/spaces/spaces.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { Media, MediaType, Status } from '@prisma/client';
+import { Media, MediaType, Prisma, Status } from '@prisma/client';
 import { IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
 import { type } from 'os';
+import { MediaConstants } from './media.constant';
 
 export class CreateNewMediaRequest {
   @ApiProperty({
@@ -66,3 +68,20 @@ export type MediaRespone<T> = {
   message: string;
   data: T[] | T;
 };
+
+export class MediaUrlDto {
+  id: number;
+  mediaId: number | null;
+
+  @ApiProperty({
+    enum: Object.values(MediaType),
+  })
+  type: MediaType;
+
+  path: string;
+  s3Bucket: string | null;
+  s3Key: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
