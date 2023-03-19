@@ -1,0 +1,52 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+// Models
+
+//
+// Media
+//
+
+model Media {
+    id          String     @id @default(uuid())
+    type        MediaType
+    name        String
+    description String
+    url         MediaUrl[]
+    status      Status
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    deletedAt DateTime?
+}
+
+enum MediaType {
+    AUDIO
+    IMAGE
+}
+
+enum Status {
+    ACTIVE
+    INACTIVE
+}
+
+model MediaUrl {
+    id       String    @id @default(uuid())
+    media    Media?    @relation(fields: [mediaId], references: [id], onUpdate: Cascade, onDelete: SetNull)
+    mediaId  String?
+    type     MediaType
+    path     String
+    s3Bucket String?
+    s3Key    String?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([mediaId])
+}
